@@ -1,13 +1,13 @@
-#include "CMatrixReader.h"
-#include "CMatrixException.h"
+#include "CGraphReader.h"
+#include "CGraphException.h"
 
 /**
  * CGraphReader default constructor
  *
- * @param filename Path of the serialized matrix file
+ * @param filename Path of the serialized graph file
  */
 CGraphReader::CGraphReader(const char *filename) {
-    this->pMARFilename = filename;
+    this->pGRRFilename = filename;
 }
 
 /**
@@ -15,80 +15,70 @@ CGraphReader::CGraphReader(const char *filename) {
  *
  * @param reader Reader model
  */
-CGraphReader::CGraphReader(const CMatrixReader &reader) {
-    this->pMARFilename = reader.pMARFilename;
+CGraphReader::CGraphReader(const CGraphReader &reader) {
+    this->pGRRFilename = reader.pGRRFilename;
 }
 
 /**
  * Close the reader file if it opened then destroy it
  */
 CGraphReader::~CGraphReader() {
-    if (this->pMARFile != nullptr) {
-        fclose(this->pMARFile);
+    if (this->pGRRFile != nullptr) {
+        fclose(this->pGRRFile);
     }
 }
 
 /**
- * Analyze the reader provided file and build a matrix from it
+ * Analyze the reader provided file and build a graph from it
  *
  * @warning Currently the library only supports deserialization of double matrix, if an other type is specified, an
  * exception will be thrown
- * @throw CMatrixException if no file have been found, if the matrix is not of of the type double or the file is mal-formed
- * @return A fresh new matrix initialized and filled following the reader file instructions
+ * @throw CGraphException if no file have been found, if the file is mal-formed
+ * @return A fresh new graph initialized and filled following the reader file instructions
  */
-CMatrix<double>* CGraphReader::MARRead() {
-    FILE* file = this->MARGetFile();
+CMatrix<double>* CGraphReader::GRRRead() {
+    FILE* file = this->GRRGetFile();
     if (file) {
         // Variables initialization
         CMatrix<double> *matrix;                    // Current matrix
-        int bufferLength = 1024;                     // Max buffer length (by line)
+        int bufferLength = 1024;                    // Max buffer length (by line)
         char buffer[1024];                          // Buffer used to read the file
         int fileLineCounter = 0;                    // Actual number of the file lines that have been analyzed
-        int matrixLineCounter = 0;                  // Number of lines in the matrix
-        int matrixColumnCounter = 0;                // Number of columns in the matrix
-        char matrixType[50];                        // Type of the matrix items
-        int actualMatrixLineCounter = 0;            // Number of matrix lines that have been analyzed
-        int actualMatrixColumnCounter = 0;          // Number of matrix columns that have been analyzed
+        int graphVertexCounter = 0;                 // Number of vertexes in the graph
+        int graphArcCounter = 0;                    // Number of arcs in the graph
+        int actualGraphVertexCounter = 0;           // Number of graph vertices that have been analyzed
+        int actualGraphArcCounter = 0;              // Number of graph arcs that have been analyzed
+        bool vertexTableClosed = false;             // Whether the vertex table is closed or not
         // Check if the malloc failed
-        if (!buffer) throw CMatrixException(MATRIX_EXCEPTION_MEMORY_ERROR, "Can't allocate read buffer");
+        if (!buffer) throw CGraphException(GRAPH_EXCEPTION_MEMORY_ERROR, "Can't allocate read buffer");
         // Buffer will iterate through all of the file lines
         while (fgets(buffer, bufferLength - 1, file) != NULL) {
             // Increment the number of the file lines analyzed
             fileLineCounter++;
             // The buffer treatment will depend on the actual number of lines analyzed
             switch (fileLineCounter) {
-                // TypeMatrice=double
+                // NBSommets=[int]
                 case 1:
-                    if (sscanf(buffer, "TypeMatrice=%s", matrixType) == 1) {
-                        // Only the double type is supported for now
-                        if (strcmp(matrixType, "double") != 0) {
-                            throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_UNSUPPORTED_TYPE,strMultiCat(3,
-                                       "Type ", matrixType, " isn't supported yet by deserialization, please use double only"));
-                        }
-                    } else {
-                        throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
-                                       "Syntax error at line ", itoa(fileLineCounter), ", expected \"TypeMatrice=[type]\" got ", buffer));
+                    if (sscanf(buffer, "NBSommets=%d", &graphVertexCounter) != 1) {
+                        throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
+                                       "Syntax error at line ", itoa(fileLineCounter),
+                                       ", expected \"NBSommets=[int]\" got ", buffer));
                     }
                     break;
-                // NBLignes=[int]
+                // NBArcs=[int]
                 case 2:
-                    if (sscanf(buffer, "NBLignes=%d", &matrixLineCounter) == 0) {
-                        throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
-                                       "Syntax error at line ", itoa(fileLineCounter), ", expected \"NBLignes=[int]\" got ", buffer));
+                    if (sscanf(buffer, "NBArcs=%d", &graphArcCounter) != 1) {
+                        throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
+                                       "Syntax error at line ", itoa(fileLineCounter),
+                                       ", expected \"NBArcs=[int]\" got ", buffer));
                     }
                     break;
-                // NBColonnes=[int]
+                // Sommets=[
                 case 3:
-                    if (sscanf(buffer, "NBColonnes=%d", &matrixColumnCounter) == 0) {
-                        throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
-                                       "Syntax error at line ", itoa(fileLineCounter), ", expected \"NBColonnes=[int]\" got ", buffer));
-                    }
-                    break;
-                // Matrice=[
-                case 4:
-                    if (strcmp(buffer, "Matrice=[\n") != 0) {
-                        throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
-                                       "Syntax error at line ", itoa(fileLineCounter), R"(, expected "Matrice=[\n" got )", buffer));
+                    if (strcmp(buffer, "Sommets=[\n") != 0) {
+                        throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
+                                       "Syntax error at line ", itoa(fileLineCounter),
+                                       R"(, expected "Sommets=[\n" got )", buffer));
                     }
                     matrix = new CMatrix<double>(matrixLineCounter, matrixColumnCounter);
                     break;
@@ -96,70 +86,72 @@ CMatrix<double>* CGraphReader::MARRead() {
                 // There should be the same number of double in a line than the "NBColonnes" field plus,
                 // There should be the same number of lines than the "NBLignes" field
                 default:
-                    if (strcmp(buffer, "]") == 0) {
-                        // If the number of rows declared is inconsistent with the actual number of
-                        // rows, an exception is thrown
-                        if (actualMatrixLineCounter != matrixLineCounter) {
-                            throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_INCONSISTENT_LINE_AMOUNT,strMultiCat(6,
-                                           "Syntax error at line ", itoa(fileLineCounter),
-                                           ", Expected an amount of ", itoa(matrixLineCounter), " lines, "
-                                           "declared ", itoa(actualMatrixLineCounter)));
-                        } else {
-                            return matrix;
+                    // First case, vertices definition table
+                    if (!vertexTableClosed) {
+                        // Check if the line is the closing bracket
+                        if (strcmp(buffer, "]\n") == 0) {
+                            vertexTableClosed = true;
+                            // If the number of vertices declared is inconsistent with the actual number of
+                            // vertices, an exception is thrown
+                            if (actualGraphVertexCounter != graphVertexCounter) {
+                                throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_VERTEX_AMOUNT,
+                                      strMultiCat(6,
+                                                  "Syntax error at line ", itoa(fileLineCounter),
+                                                  ", Expected an amount of ", itoa(graphVertexCounter),
+                                                  " vertices, "
+                                                  "declared ", itoa(actualGraphVertexCounter)));
+                            }
                         }
-                    } else {
-                        int i = 0;
-                        int actualDoubleIndex = 0;
-                        char actualDouble[100];
-                        actualMatrixColumnCounter = 0;
-                        // Loop through all of the line characters
-                        while (buffer[i] != '\n') {
-                            // If the number of columns declared is inconsistent with the actual number of
-                            // columns, break the loop and an exception is thrown just after
-                            if (actualMatrixColumnCounter > matrixColumnCounter) break;
-                            // Build the current double by updating a temp array of char and the last char index or,
-                            // If the current char is not a digit, not a dot or not a space, an exception is thrown
-                            if (buffer[i] == '.' || isdigit(buffer[i])) {
-                                actualDouble[actualDoubleIndex] = buffer[i];
-                                actualDoubleIndex++;
-                            } else if (buffer[i] != ' ') {
-                                char wrongChar[2] = {buffer[i], '\0'};
-                                throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(5,
+                        // Else the line describe a vertex
+                        else {
+                            int vertexId = 0;
+                            if (sscanf(buffer, "Numero=%d", &vertexId) == 1) {
+                                // TODO ADD VERTEX
+                            } else {
+                                throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
                                                "Syntax error at line ", itoa(fileLineCounter),
-                                                ", Unexpected character ", wrongChar,
-                                                ", expected number"));
+                                               ", expected \"Numero=[int]\" got ", buffer));
                             }
-                            // If the character is a space or if the next character is the end of the buffer,
-                            // Increment the number of analyzed columns then,
-                            // Update the matrix item with the previous analyzed number
-                            if ((buffer[i] == ' ' || buffer[i + 1] == '\n') && actualDoubleIndex > 0) {
-                                actualDouble[actualDoubleIndex] = '\0';
-                                double matrixItem = atof(actualDouble);
-                                matrix->MATSetItemAt(actualMatrixLineCounter, actualMatrixColumnCounter, matrixItem);
-                                actualDoubleIndex = 0;
-                                actualMatrixColumnCounter++;
+                        }
+                    }
+                    // Second case, arcs definition table
+                    else {
+                        // Check if the line is the closing bracket
+                        if (strcmp(buffer, "]\n") == 0) {
+                            // If the number of arcs declared is inconsistent with the actual number of
+                            // arcs, an exception is thrown
+                            if (actualGraphArcCounter != graphArcCounter) {
+                                throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_ARC_AMOUNT,
+                                      strMultiCat(6,
+                                                  "Syntax error at line ", itoa(fileLineCounter),
+                                                  ", Expected an amount of ", itoa(graphArcCounter),
+                                                  " arcs, "
+                                                  "declared ", itoa(actualGraphArcCounter)));
                             }
-                            i++;
                         }
-                        // If the number of column is inconsistent with the number declared, an exception is thrown
-                        if (actualMatrixColumnCounter != matrixColumnCounter) {
-                            throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_INCONSISTENT_COLUMN_AMOUNT,strMultiCat(6,
-                                           "Syntax error at line ", itoa(fileLineCounter),
-                                           ", Expected an amount of ", itoa(matrixColumnCounter), " columns, "
-                                           "declared ", itoa(actualMatrixColumnCounter)));
+                        // Else the line describe an arc
+                        else {
+                            int startVertexId = 0;
+                            int endVertexId = 0;
+                            if (sscanf(buffer, "Debut=%d, Fin=%d", &startVertexId, &endVertexId) == 2) {
+                                // TODO ADD ARC
+                            } else {
+                                throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
+                                               "Syntax error at line ", itoa(fileLineCounter),
+                                               ", expected \"Debut=[int], Fin=[int]\" got ", buffer));
+                            }
                         }
-                        actualMatrixLineCounter++;
                     }
                     break;
             }
         }
-        // If the method goes so far, then no matrix have been returned or in other words, the file is not complete,
+        // If the method goes so far, then no graph have been returned or in other words, the file is not complete,
         // It syntax is correct but lines are missing
-        throw CMatrixException(MATRIX_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, "File is not complete");
+        throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, "File is not complete");
     } else {
         // If file is null, then the fopen call failed and the file is not readable / does not exist
-        throw CMatrixException(MATRIX_EXCEPTION_NO_SUCH_FILE, strMultiCat(3,
-                                                                          "No such file ", this->MARGetFilename(), " (or the file is not readable by the program)"));
+        throw CGraphException(GRAPH_EXCEPTION_NO_SUCH_FILE, strMultiCat(3,
+                        "No such file ", this->GRRGetFilename(), " (or the file is not readable by the program)"));
     }
 }
 
@@ -169,11 +161,11 @@ CMatrix<double>* CGraphReader::MARRead() {
  *
  * @return
  */
-FILE* CGraphReader::MARGetFile() {
-    if (this->pMARFile == nullptr) {
-        this->pMARFile = fopen(this->pMARFilename, "r");
+FILE* CGraphReader::GRRGetFile() {
+    if (this->pGRRFile == nullptr) {
+        this->pGRRFile = fopen(this->pGRRFilename, "r");
     }
-    return this->pMARFile;
+    return this->pGRRFile;
 }
 
 /**
@@ -181,7 +173,7 @@ FILE* CGraphReader::MARGetFile() {
  *
  * @return The reader provided file name
  */
-inline const char* CGraphReader::MARGetFilename() {
-    return this->pMARFilename;
+inline const char* CGraphReader::GRRGetFilename() {
+    return this->pGRRFilename;
 }
 

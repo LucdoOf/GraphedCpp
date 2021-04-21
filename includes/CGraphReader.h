@@ -2,8 +2,8 @@
 // Created by lucas on 31/03/2021.
 //
 
-#ifndef MATRIXEDCPP_CMATRIXREADER_H
-#define MATRIXEDCPP_CMATRIXREADER_H
+#ifndef GRAPHEDCPP_CGRAPHREADER_H
+#define GRAPHEDCPP_CGRAPHREADER_H
 
 #include <string.h>
 #include "defines.h"
@@ -15,10 +15,10 @@
 #include "string_utils.h"
 
 /**
- * CMatrixReader class
+ * CGraphReader class
  *
- * This class is intended to create matrix objects from flat files and to handle
- * exceptions if flat files does not respect the correct matrix format
+ * This class is intended to create graph objects from flat files and to handle
+ * exceptions if flat files does not respect the correct graph format
  */
 class CGraphReader {
 
@@ -26,24 +26,24 @@ private:
     /**
      * Reader provided file name
      */
-    const char* pMARFilename;
+    const char* pGRRFilename;
     /**
      * Temporary file buffer for inner operations
      */
-    FILE* pMARFile;
+    FILE* pGRRFile;
     /**
      * Opens a file stream if the provided file has not been opened yet,
      * then returns the provided file as a FILE pointer
      *
      * @return
      */
-    FILE* MARGetFile();
+    FILE* GRRGetFile();
 
 public:
     /**
      * CGraphReader default constructor
      *
-     * @param filename Path of the serialized matrix file
+     * @param filename Path of the serialized graph file
      */
     explicit CGraphReader(const char* filename);
     /**
@@ -51,7 +51,7 @@ public:
      *
      * @param reader Reader model
      */
-    CGraphReader(CMatrixReader const &reader);
+    CGraphReader(CGraphReader const &reader);
     /**
      * CGraphReader destructor
      *
@@ -59,7 +59,7 @@ public:
      */
     ~CGraphReader();
     /**
-     * Analyze the reader provided file and build a matrix from it
+     * Analyze the reader provided file and build a graph from it
      * The provided file must follow the follow format:
      *
      * TypeMatrice=[type]
@@ -75,16 +75,17 @@ public:
      * declared above, an exception will be thrown
      * @warning Currently the library only supports deserialization of double matrix, if an other type is specified, an
      * exception will be thrown
-     * @throw CMatrixException if no file have been found, if the matrix is not of of the type double or the file is mal-formed
-     * @return A fresh new matrix initialized and filled following the reader file instructions
+     * @throw CGraphException if no file have been found, if the file is mal-formed
+     * @return A fresh new graph initialized and filled following the reader file instructions
      */
-    CMatrix<double>* MARRead();
+    CMatrix<double>* GRRRead();
     /**
      * Retrieves the reader provided file name
      *
      * @return The reader provided file name
      */
-    inline const char* MARGetFilename();
+    inline const char* GRRGetFilename();
+
 };
 
-#endif //MATRIXEDCPP_CMATRIXREADER_H
+#endif //GRAPHEDCPP_CGRAPHREADER_H
