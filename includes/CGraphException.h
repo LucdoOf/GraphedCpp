@@ -1,5 +1,5 @@
-#ifndef MATRIXEDCPP_CMATRIXEXCEPTION_H
-#define MATRIXEDCPP_CMATRIXEXCEPTION_H
+#ifndef GRAPHEDCPP_CGRAPHEXCEPTION_H
+#define GRAPHEDCPP_CGRAPHEXCEPTION_H
 
 #include <exception>
 #include <stdio.h>
@@ -7,25 +7,25 @@
 #include <string.h>
 
 /**
- * CMatrixException class
+ * CGraphException class
  *
- * Used to throw custom exceptions inside the Matrixed project
+ * Used to throw custom exceptions inside the Graphed project
  */
-class CMatrixException : public std::exception {
+class CGraphException : public std::exception {
 
 public:
     /**
-     * CMatrixException constructor
+     * CGraphException constructor
      *
      * @see defines.h For the list of available error codes
      * @param errorCode Error code used to identify the exception
      * @param message Message describing the exception
      */
-    explicit CMatrixException(int errorCode, char* message) noexcept;
+    explicit CGraphException(int errorCode, char* message) noexcept;
     /**
      * @inheritDoc
      */
-    ~CMatrixException() override = default;
+    ~CGraphException() override = default;
     /**
      * @inheritDoc
      */
@@ -35,15 +35,15 @@ private:
     /**
      * Message describing the exception
      */
-    char* sMAEMessage;
+    char* sGREMessage;
 
     /**
      * Error code used to identify the exception
      *
      * @see defines.h For the list of available error codes
      */
-    int iMAEErrorCode;
+    int iGREErrorCode;
 
 };
 
-#endif //MATRIXEDCPP_CMATRIXEXCEPTION_H
+#endif //GRAPHEDCPP_CGRAPHEXCEPTION_H

@@ -7,10 +7,10 @@ include_directories(includes)
 
 add_executable(MatrixedCpp
         includes/CMatrix.h
-        src/utils/CMatrixException.cpp
-        includes/CMatrixException.h
+        src/utils/CGraphException.cpp
+        includes/CGraphException.h
         src/core/CMatrixReader.cpp
-        includes/CMatrixReader.h
+        includes/CGraphReader.h.h
         includes/defines.h
         src/main.cpp
         src/utils/string_utils.cpp
