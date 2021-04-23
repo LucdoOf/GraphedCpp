@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "CMatrix.h"
 #include "string_utils.h"
 
 /**
@@ -78,7 +77,7 @@ public:
      * @throw CGraphException if no file have been found, if the file is mal-formed
      * @return A fresh new graph initialized and filled following the reader file instructions
      */
-    CMatrix<double>* GRRRead();
+    void GRRRead();
     /**
      * Retrieves the reader provided file name
      *

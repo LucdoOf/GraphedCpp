@@ -1,4 +1,3 @@
-#include "CGraph.h"
 #include "CGraphReader.h"
 #include <iostream>
 #include <math.h>
@@ -11,5 +10,6 @@
  * @return The program exit code
  */
 int main(int argc, char** argv){
-
+    auto reader = new CGraphReader(argv[1]);
+    reader->GRRRead();
 }

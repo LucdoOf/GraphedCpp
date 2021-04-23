@@ -36,11 +36,11 @@ CGraphReader::~CGraphReader() {
  * @throw CGraphException if no file have been found, if the file is mal-formed
  * @return A fresh new graph initialized and filled following the reader file instructions
  */
-CMatrix<double>* CGraphReader::GRRRead() {
+void CGraphReader::GRRRead() {
     FILE* file = this->GRRGetFile();
     if (file) {
         // Variables initialization
-        CMatrix<double> *matrix;                    // Current matrix
+        //CMatrix<double> *matrix;                    // Current matrix
         int bufferLength = 1024;                    // Max buffer length (by line)
         char buffer[1024];                          // Buffer used to read the file
         int fileLineCounter = 0;                    // Actual number of the file lines that have been analyzed
@@ -49,8 +49,7 @@ CMatrix<double>* CGraphReader::GRRRead() {
         int actualGraphVertexCounter = 0;           // Number of graph vertices that have been analyzed
         int actualGraphArcCounter = 0;              // Number of graph arcs that have been analyzed
         bool vertexTableClosed = false;             // Whether the vertex table is closed or not
-        // Check if the malloc failed
-        if (!buffer) throw CGraphException(GRAPH_EXCEPTION_MEMORY_ERROR, "Can't allocate read buffer");
+        bool arcTableOpened = false;                // Whether the arc table is opened or not
         // Buffer will iterate through all of the file lines
         while (fgets(buffer, bufferLength - 1, file) != NULL) {
             // Increment the number of the file lines analyzed
@@ -80,7 +79,7 @@ CMatrix<double>* CGraphReader::GRRRead() {
                                        "Syntax error at line ", itoa(fileLineCounter),
                                        R"(, expected "Sommets=[\n" got )", buffer));
                     }
-                    matrix = new CMatrix<double>(matrixLineCounter, matrixColumnCounter);
+                    //matrix = new CMatrix<double>(matrixLineCounter, matrixColumnCounter);
                     break;
                 // Lines with double separated with spaces or last line (])
                 // There should be the same number of double in a line than the "NBColonnes" field plus,
@@ -106,39 +105,57 @@ CMatrix<double>* CGraphReader::GRRRead() {
                         else {
                             int vertexId = 0;
                             if (sscanf(buffer, "Numero=%d", &vertexId) == 1) {
+                                actualGraphVertexCounter++;
                                 // TODO ADD VERTEX
                             } else {
                                 throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
                                                "Syntax error at line ", itoa(fileLineCounter),
-                                               ", expected \"Numero=[int]\" got ", buffer));
+                                               R"(, expected "Numero=[int]" got ")", buffer));
                             }
                         }
                     }
                     // Second case, arcs definition table
                     else {
-                        // Check if the line is the closing bracket
-                        if (strcmp(buffer, "]\n") == 0) {
-                            // If the number of arcs declared is inconsistent with the actual number of
-                            // arcs, an exception is thrown
-                            if (actualGraphArcCounter != graphArcCounter) {
-                                throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_ARC_AMOUNT,
-                                      strMultiCat(6,
+                        // If the line "Arcs=[" have been analyzed
+                        if (arcTableOpened) {
+                            // Check if the line is the closing bracket
+                            if (strcmp(buffer, "]") == 0) {
+                                // If the number of arcs declared is inconsistent with the actual number of
+                                // arcs, an exception is thrown
+                                if (actualGraphArcCounter != graphArcCounter) {
+                                    throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_ARC_AMOUNT,strMultiCat(6,
                                                   "Syntax error at line ", itoa(fileLineCounter),
                                                   ", Expected an amount of ", itoa(graphArcCounter),
                                                   " arcs, "
                                                   "declared ", itoa(actualGraphArcCounter)));
+                                } else {
+                                    return;
+                                }
+                            }
+                            // Else the line describe an arc
+                            else {
+                                int startVertexId = 0;
+                                int endVertexId = 0;
+                                if (sscanf(buffer, "Debut=%d, Fin=%d", &startVertexId, &endVertexId) == 2) {
+                                    actualGraphArcCounter++;
+                                    // TODO ADD ARC
+                                } else {
+                                    throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
+                                                  "Syntax error at line ", itoa(fileLineCounter),
+                                                  R"(, expected "Debut=[int], Fin=[int]" got ")",
+                                                  buffer));
+                                }
                             }
                         }
-                        // Else the line describe an arc
+                        // Else we need to ensure that the line "Arcs=[" is the next line
                         else {
-                            int startVertexId = 0;
-                            int endVertexId = 0;
-                            if (sscanf(buffer, "Debut=%d, Fin=%d", &startVertexId, &endVertexId) == 2) {
-                                // TODO ADD ARC
+                            if (strcmp(buffer, "Arcs=[\n") == 0) {
+                                arcTableOpened = true;
                             } else {
-                                throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
-                                               "Syntax error at line ", itoa(fileLineCounter),
-                                               ", expected \"Debut=[int], Fin=[int]\" got ", buffer));
+                                throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
+                                              "Syntax error at line ", itoa(fileLineCounter),
+                                              R"(, expected "Arcs=[" got ")",
+                                              buffer));
                             }
                         }
                     }
