@@ -1,5 +1,5 @@
-#include "CMatrixReader.h"
-#include "CMatrixException.h"
+
+#include <CGraphReader.h>
 
 /**
  * CGraphReader default constructor

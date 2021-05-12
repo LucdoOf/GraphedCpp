@@ -1,4 +1,3 @@
-#include "CGraph.h"
 #include "CGraphReader.h"
 #include <iostream>
 #include <math.h>
