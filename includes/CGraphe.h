@@ -6,12 +6,15 @@
 #define MATRIXEDCPP_CGRAPHE_H
 
 #include "CSommet.h"
+#include <malloc.h>
 
 class CGraph{
+
 private:
-    CSommet** pGRAVertices;
-    int iCountVertex;
+    CList<CSommet*>* pGRAVertices;
 public:
-    
+    void print();
+    inline CList<CSommet*>* GRAGetVertices();
+
 };
 #endif //MATRIXEDCPP_CGRAPHE_H

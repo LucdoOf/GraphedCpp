@@ -6,7 +6,6 @@
 #define MATRIXEDCPP_CARC_H
 
 #include "CSommet.h"
-#include "CGraphe.h"
 
 class CArc{
 private:
@@ -14,7 +13,7 @@ private:
 public:
     CArc(int iARCDestination);
     ~CArc();
-    CSommet* getDestinationVertex();
+    CSommet* ARCGetDestinationVertex();
 };
 
 #endif //MATRIXEDCPP_CARC_H
