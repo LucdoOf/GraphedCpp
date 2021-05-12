@@ -10,5 +10,6 @@
  * @return The program exit code
  */
 int main(int argc, char** argv){
-
+    auto reader = new CGraphReader(argv[1]);
+    reader->GRRRead();
 }

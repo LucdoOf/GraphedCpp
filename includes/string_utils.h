@@ -1,5 +1,5 @@
-#ifndef MATRIXEDCPP_STRING_UTILS_H
-#define MATRIXEDCPP_STRING_UTILS_H
+#ifndef GRAPHEDCPP_STRING_UTILS_H
+#define GRAPHEDCPP_STRING_UTILS_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -31,4 +31,4 @@ char* itoa(int num);
  */
 char * strSafeCat(char *s1, const char *s2);
 
-#endif //MATRIXEDCPP_STRING_UTILS_H
+#endif //GRAPHEDCPP_STRING_UTILS_H

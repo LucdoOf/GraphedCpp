@@ -47,16 +47,16 @@
  */
 #define GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT 3
 /**
- * Thrown when the amount of lines declared / detected is not valid during deserialization
+ * Thrown when the amount of vertices declared / detected is not valid during deserialization
  *
- * @example The file said that there were 3 lines but the file also declared 4 lines
+ * @example The file said that there were 3 vertices but the file also declared 4 vertices
  */
-#define GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_LINE_AMOUNT 4
+#define GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_VERTEX_AMOUNT 4
 /**
- * Thrown when the amount of columns declared / detected is not valid during deserialization
+ * Thrown when the amount of arcs declared / detected is not valid during deserialization
  *
- * @example The file said that there were 3 columns but the file also declared 4 columns
+ * @example The file said that there were 3 arcs but the file also declared 4 arcs
  */
-#define GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_COLUMN_AMOUNT 5
+#define GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_ARC_AMOUNT 5
 
 #endif //GRAPHEDCPP_DEFINES_H
