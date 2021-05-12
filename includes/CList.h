@@ -2,6 +2,8 @@
 // Created by lucas on 12/05/2021.
 //
 
+#include <malloc.h>
+
 #ifndef GRAPHEDCPP_CLIST_H
 #define GRAPHEDCPP_CLIST_H
 
@@ -16,15 +18,15 @@ public:
     inline T get(int index);
     void add(T item);
     void remove(T item);
-    void remove(int index);
+    void removeAt(int index);
     int indexOf(T item);
+    bool contains(T item);
     inline int getSize();
     T shift(int index);
     inline T shift();
 
 private:
     void reallocItems();
-    void
     int size;
     T** items;
 
@@ -55,7 +57,7 @@ void CList<T>::remove(T item) {
 }
 
 template<typename T>
-void CList<T>::remove(int index) {
+void CList<T>::removeAt(int index) {
     this->shift(index);
 }
 
@@ -96,6 +98,11 @@ inline T CList<T>::shift() {
 template<typename T>
 void CList<T>::reallocItems() {
     realloc(this->items, this->size * sizeof(T));
+}
+
+template<typename T>
+bool CList<T>::contains(T item) {
+    return this->indexOf(item) >= 0;
 }
 
 

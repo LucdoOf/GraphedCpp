@@ -3,3 +3,7 @@
 //
 
 #include "CArc.h"
+
+CSommet *CArc::ARCGetDestinationVertex() {
+    return nullptr;
+}
