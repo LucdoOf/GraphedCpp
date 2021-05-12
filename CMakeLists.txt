@@ -19,4 +19,4 @@ add_executable(GraphedCpp
         includes/defines.h
         src/main.cpp
         src/utils/string_utils.cpp
-        includes/string_utils.h)
+        includes/string_utils.h includes/CList.h)
