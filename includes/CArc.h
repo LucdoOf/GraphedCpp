@@ -5,12 +5,16 @@
 #ifndef MATRIXEDCPP_CARC_H
 #define MATRIXEDCPP_CARC_H
 
+#include "CSommet.h"
+#include "CGraphe.h"
+
 class CArc{
 private:
     int iARCDestination;
 public:
     CArc(int iARCDestination);
     ~CArc();
+    CSommet* getDestinationVertex();
 };
 
 #endif //MATRIXEDCPP_CARC_H

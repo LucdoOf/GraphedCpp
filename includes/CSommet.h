@@ -5,14 +5,18 @@
 
 class CSommet {
 private:
-    int iId;
+    int iSOMId;
     CArc** pSOMIncoming;
     CArc** pSOMLeaving;
 public:
+    CSommet(int iId, CArc** pIncoming, CArc** pLeaving, int iCountIncoming, int iCountLeaving);
     CSommet(int iId);
+    CSommet(CSommet* pSommet);
     ~CSommet();
-    void setIncoming(CArc* CArc);
-    void setLeaving(CArc* CArc);
+    void setIncoming(CArc* arc);
+    void setLeaving(CArc* arc);
+    int iSOMCountIncoming;
+    int iSOMCountLeaving;
 };
 
 #endif //GRAPHEDCPP_CSOMMET_H
