@@ -11,20 +11,15 @@ private:
     int iId;
     CList<CArc*>* pSOMIncoming;
     CList<CArc*>* pSOMLeaving;
-    int iIncomingCount;
-    int iLeavingCount;
+
 public:
     CSommet(int iId);
     ~CSommet();
-    void setIncoming(CArc* CArc);
-    void setLeaving(CArc* CArc);
-    int SOMGetLeavingCount();
-    int SOMGetIncomingCount();
+    void addIncomingArc(CArc* CArc);
+    void addLeavingArc(CArc* CArc);
     CList<CArc*>* SOMGetIncomingArcs();
     CList<CArc*>* SOMGetLeavingArcs();
-    CList<CSommet>* SOMGetIncomingVertices();
     int SOMGetId();
-    void print();
 
 };
 

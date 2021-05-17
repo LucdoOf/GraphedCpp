@@ -15,7 +15,7 @@ class CList {
 public:
     CList();
     ~CList();
-    inline T get(int index);
+    T get(int index);
     void add(T item);
     void remove(T item);
     void removeAt(int index);
@@ -23,20 +23,19 @@ public:
     bool contains(T item);
     inline int getSize();
     T shift(int index);
-    inline T shift();
+    T shift();
 
 private:
     void reallocItems();
     int size;
-    T** items;
+    T* items;
 
 };
-
 
 template<typename T>
 CList<T>::CList() {
     this->size = 0;
-    this->items = malloc(sizeof(T));
+    this->items = (T*) malloc(sizeof(T));
 }
 
 template<typename T>
@@ -86,18 +85,18 @@ T CList<T>::shift(int index) {
 }
 
 template<typename T>
-inline T CList<T>::get(int i) {
-    return this->items(i);
+T CList<T>::get(int i) {
+    return this->items[i];
 }
 
 template<typename T>
-inline T CList<T>::shift() {
+T CList<T>::shift() {
     return this->shift(0);
 }
 
 template<typename T>
 void CList<T>::reallocItems() {
-    realloc(this->items, this->size * sizeof(T));
+    this->items = (T*) realloc(this->items, this->size * sizeof(T));
 }
 
 template<typename T>

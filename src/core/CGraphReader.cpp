@@ -36,11 +36,11 @@ CGraphReader::~CGraphReader() {
  * @throw CGraphException if no file have been found, if the file is mal-formed
  * @return A fresh new graph initialized and filled following the reader file instructions
  */
-void CGraphReader::GRRRead() {
+CGraph* CGraphReader::GRRRead() {
     FILE* file = this->GRRGetFile();
     if (file) {
         // Variables initialization
-        //CMatrix<double> *matrix;                    // Current matrix
+        CGraph* graph;                              // Current graph
         int bufferLength = 1024;                    // Max buffer length (by line)
         char buffer[1024];                          // Buffer used to read the file
         int fileLineCounter = 0;                    // Actual number of the file lines that have been analyzed
@@ -79,7 +79,7 @@ void CGraphReader::GRRRead() {
                                        "Syntax error at line ", itoa(fileLineCounter),
                                        R"(, expected "Sommets=[\n" got )", buffer));
                     }
-                    //matrix = new CMatrix<double>(matrixLineCounter, matrixColumnCounter);
+                    graph = new CGraph();
                     break;
                 // Lines with double separated with spaces or last line (])
                 // There should be the same number of double in a line than the "NBColonnes" field plus,
@@ -106,7 +106,7 @@ void CGraphReader::GRRRead() {
                             int vertexId = 0;
                             if (sscanf(buffer, "Numero=%d", &vertexId) == 1) {
                                 actualGraphVertexCounter++;
-                                // TODO ADD VERTEX
+                                graph->addVertex(new CSommet(vertexId));
                             } else {
                                 throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
                                                "Syntax error at line ", itoa(fileLineCounter),
@@ -129,7 +129,7 @@ void CGraphReader::GRRRead() {
                                                   " arcs, "
                                                   "declared ", itoa(actualGraphArcCounter)));
                                 } else {
-                                    return;
+                                    return graph;
                                 }
                             }
                             // Else the line describe an arc
@@ -138,7 +138,17 @@ void CGraphReader::GRRRead() {
                                 int endVertexId = 0;
                                 if (sscanf(buffer, "Debut=%d, Fin=%d", &startVertexId, &endVertexId) == 2) {
                                     actualGraphArcCounter++;
-                                    // TODO ADD ARC
+                                    CSommet* existingStartVertex = graph->getVertexById(startVertexId);
+                                    CSommet* existingEndVertex = graph->getVertexById(endVertexId);
+                                    if (existingStartVertex != nullptr && existingEndVertex != nullptr) {
+                                        CArc* arc = new CArc(existingEndVertex->SOMGetId());
+                                        existingStartVertex->addLeavingArc(arc);
+                                    } else {
+                                        throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_UNKNOWN_VERTEX,strMultiCat(4,
+                                                 "Syntax error at line ", itoa(fileLineCounter),
+                                                 " unknown start or end vertex ",
+                                                 buffer));
+                                    }
                                 } else {
                                     throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
                                                   "Syntax error at line ", itoa(fileLineCounter),

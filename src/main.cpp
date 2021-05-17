@@ -11,5 +11,5 @@
  */
 int main(int argc, char** argv){
     auto reader = new CGraphReader(argv[1]);
-    reader->GRRRead();
+    reader->GRRRead()->print();
 }

@@ -58,5 +58,9 @@
  * @example The file said that there were 3 arcs but the file also declared 4 arcs
  */
 #define GRAPH_EXCEPTION_DESERIALIZATION_INCONSISTENT_ARC_AMOUNT 5
+/**
+ * Thrown when an arc starts or ends by an unknown vertex
+ */
+#define GRAPH_EXCEPTION_DESERIALIZATION_UNKNOWN_VERTEX 6
 
 #endif //GRAPHEDCPP_DEFINES_H

@@ -8,13 +8,16 @@
 #include "CSommet.h"
 #include <malloc.h>
 
-class CGraph{
+class CGraph {
 
 private:
     CList<CSommet*>* pGRAVertices;
 public:
+    CGraph();
     void print();
     inline CList<CSommet*>* GRAGetVertices();
+    void addVertex(CSommet* vertex);
+    CSommet* getVertexById(int id);
 
 };
 #endif //MATRIXEDCPP_CGRAPHE_H

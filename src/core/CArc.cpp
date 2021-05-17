@@ -4,6 +4,10 @@
 
 #include "CArc.h"
 
-CSommet *CArc::ARCGetDestinationVertex() {
-    return nullptr;
+CArc::CArc(int iARCDestination) {
+    this->iARCDestination = iARCDestination;
+}
+
+int CArc::ARCGetDestination() {
+    return this->iARCDestination;
 }

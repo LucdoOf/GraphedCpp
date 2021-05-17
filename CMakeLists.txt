@@ -14,8 +14,8 @@ add_executable(GraphedCpp
         src/core/CSommet.cpp
         includes/CArc.h
         src/core/CArc.cpp
-        includes/CGraphe.h
-        src/core/CGraphe.cpp
+        includes/CGraph.h
+        src/core/CGraph.cpp
         includes/defines.h
         src/main.cpp
         src/utils/string_utils.cpp

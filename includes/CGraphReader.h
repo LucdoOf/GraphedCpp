@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "string_utils.h"
+#include "CGraph.h"
 
 /**
  * CGraphReader class
@@ -77,7 +78,7 @@ public:
      * @throw CGraphException if no file have been found, if the file is mal-formed
      * @return A fresh new graph initialized and filled following the reader file instructions
      */
-    void GRRRead();
+    CGraph* GRRRead();
     /**
      * Retrieves the reader provided file name
      *
