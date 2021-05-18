@@ -1,6 +1,6 @@
 #include "CGraphReader.h"
 #include <iostream>
-#include <math.h>
+#include "CGraphException.h"
 
 /**
  * Program entry point, run tests with the provided files as arguments
@@ -10,6 +10,11 @@
  * @return The program exit code
  */
 int main(int argc, char** argv){
-    auto reader = new CGraphReader(argv[1]);
-    reader->GRRRead()->print();
+    if (argc == 2) {
+        auto reader = new CGraphReader(argv[1]);
+        reader->GRRRead()->print();
+    } else {
+        throw CGraphException(GRAPH_EXCEPTION_INVALID_PROGRAM_PARAMETERS, strMultiCat(3,
+            "Example program need 1 parameter, given ", itoa(argc)));
+    }
 }

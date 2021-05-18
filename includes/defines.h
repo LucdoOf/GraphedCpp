@@ -14,18 +14,6 @@
  */
 #define GRAPH_EXCEPTION_NO_SUCH_FILE 1
 /**
- * Thrown when an arithmetic error occurred
- *
- * @example Division by zero, number overflow
- */
-#define GRAPH_EXCEPTION_INCONSISTENT_ARITHMETIC 6
-/**
- * Thrown when an operation between several matrices is impossible because of their incompatible dimensions
- *
- * @example Incompatible dimensions during multiplication / addition of two matrices
- */
-#define GRAPH_EXCEPTION_INCONSISTENT_DIMENSIONS 7
-/**
  * Thrown when the program parameters provided by the user are invalid
  *
  * @example Not enough / too much parameters

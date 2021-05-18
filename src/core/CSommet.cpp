@@ -29,6 +29,14 @@ void CSommet::addLeavingArc(CArc* arc) {
 }
 
 void CSommet::addIncomingArc(CArc* arc) {
+    for (int i = 0; i < this->SOMGetIncomingArcs()->getSize(); i++) {
+        CArc* existingArc = this->SOMGetIncomingArcs()->get(i);
+        if (existingArc->ARCGetDestination() == arc->ARCGetDestination()) {
+            // On évite les doublons pour des problèmes de boucles infinies lors des traitements, de plus ils sont inutiles
+            // Cependant on ne lève pas d'erreur, ce n'est pas un problème grave
+            return;
+        }
+    }
     this->SOMGetIncomingArcs()->add(arc);
 }
 
@@ -40,4 +48,12 @@ CSommet::CSommet(int iId) {
 
 CSommet::~CSommet() {
 
+}
+
+void CSommet::deleteLeavingArc(CArc *arc) {
+    this->SOMGetLeavingArcs()->remove(arc);
+}
+
+void CSommet::deleteIncomingArc(CArc *arc) {
+    this->SOMGetIncomingArcs()->remove(arc);
 }

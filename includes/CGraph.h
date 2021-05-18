@@ -14,10 +14,13 @@ private:
     CList<CSommet*>* pGRAVertices;
 public:
     CGraph();
+    CGraph(const CGraph&);
     void print();
     inline CList<CSommet*>* GRAGetVertices();
     void addVertex(CSommet* vertex);
+    void deleteVertex(CSommet* vertex);
     CSommet* getVertexById(int id);
+    CGraph* GRAInvert();
 
 };
 #endif //MATRIXEDCPP_CGRAPHE_H

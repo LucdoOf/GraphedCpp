@@ -8,23 +8,37 @@ CGraph::CGraph() {
     this->pGRAVertices = new CList<CSommet*>();
 }
 
+CGraph::CGraph(const CGraph &graph) {
+    this->pGRAVertices = new CList<CSommet*>(*graph.pGRAVertices);
+}
+
+
 
 void CGraph::print() {
+
+    /*
+     * Cette fonction marche avec la notion de chaîne.
+     * Une chaîne est définie comme la succession de sommets reliés par des arcs.
+     * Pour construire une chaîne on prend un sommet "root", puis on regarde à chaque fois le premier arc sortant
+     * et ce jusqu'au moment ou on retombe sur le sommet "root" où bien jusqu'au moment ou il n'y à plus d'arc sortant.
+     * A chaque fois que l'on passe sur un arc, on le supprime de la liste des arcs afin d'assurer le fonctionnement de l'algorithme.
+     */
+
     CGraph graph = CGraph(*this);
 
-    int rootIndex = 0;
-    CList<CSommet*>* vertexList = graph.GRAGetVertices();
-    CList<CArc*>* arcActualList = nullptr;
-    int actualChainSize;
+    int rootIndex = 0;                                       // Index du root actuel dans la liste des sommets
+    CList<CSommet*>* vertexList = graph.GRAGetVertices();    // Liste de tout les sommets du graphe
+    CList<CArc*>* arcActualList = nullptr;                   // Liste d'arc a traiter au cours de la prochaine itération
+    int actualChainSize;                                     // Utilisé pour print le nombre de vertex de la chaîne
 
     while (true) {
-        // Fin de la chaîne
+        // Fin de la chaîne courante ou début du parcours (arcActualList est nulle au tout début)
         if (arcActualList == nullptr || arcActualList->getSize() == 0) {
             // Si ce n'est pas la première itération, on affiche le nombre de sommets dans la chaîne
             if (arcActualList != nullptr) printf(" (%d vertices)", actualChainSize);
-            // Si la liste globale des vertex est vide, alors on a traité tout les sommets
+            // Si l'index courant est supérieur à celui du dernier sommet, alors on sort de la boucle, on a tout traité
             if (rootIndex == vertexList->getSize()) {
-                printf("\n"); // Il ne reste plus de sommets non traités
+                printf("\n"); // Esthetique
                 break;
             } else {
                 // Sinon, il reste des sommets non traités et on passe sur une autre chaine
@@ -34,8 +48,11 @@ void CGraph::print() {
                 printf("Root: %d", vertexList->get(rootIndex)->SOMGetId());
                 arcActualList = vertexList->get(rootIndex)->SOMGetLeavingArcs();
 
-                // On vérifie que la chaine est vide, c'est à dire si c'est la dernière itération
-                // dans laquelle la chaine va être print, soit si toutes les listes sortantes sont de taille 1 ou 0 pour la dernière
+                // On vérifie que la chaine est vide à 1 sommet prêt pour chaque maillon
+                // Si il reste des "croisements" dans la chaîne, alors il ne faut pas changer de root, il faut repasser
+                // à la prochaine itération dessus. Si par exemple on à comme root 2 et un graphe 2 -> 3, 4
+                // On ne peux pas encore changer de root à la prochaine itération, il faudra 2 itérations pour print toutes
+                // les chaînes partant de ce root.
                 bool lastIteration = true;
                 CList<CArc*>* tempList = arcActualList;
                 while (tempList != nullptr) {
@@ -53,11 +70,8 @@ void CGraph::print() {
                     }
                 }
 
-                // Si la chaine est vide, on retire le root
-                if (lastIteration) {
-                    rootIndex++;
-                }
-
+                // Si la chaine est vide, on passe au root suivant
+                if (lastIteration) rootIndex++;
             }
         } else {
             // Il reste des arcs a traiter on supprime l'arc actuel, on print, et on passe au prochain
@@ -89,4 +103,46 @@ CSommet *CGraph::getVertexById(int id) {
         if (vertex->SOMGetId() == id) return vertex;
     }
     return nullptr;
+}
+
+void CGraph::deleteVertex(CSommet *vertex) {
+    if (this->GRAGetVertices()->contains(vertex)) {
+        this->GRAGetVertices()->remove(vertex);
+        for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
+            CSommet* existingVertex = this->GRAGetVertices()->get(i);
+            for (int j = 0; j < existingVertex->SOMGetLeavingArcs()->getSize(); j++) {
+                CArc* existingArc = existingVertex->SOMGetLeavingArcs()->get(j);
+                if (existingArc->ARCGetDestination() == vertex->SOMGetId()) {
+                    existingVertex->deleteLeavingArc(existingArc);
+                }
+            }
+        }
+    }
+}
+
+CGraph *CGraph::GRAInvert() {
+    auto graph = new CGraph();
+
+    // Loop through existing vertices
+    for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
+        CSommet* existingVertex = this->GRAGetVertices()->get(i);
+        auto newVertex = new CSommet(existingVertex->SOMGetId());
+
+        // Copying incoming arcs to leaving arcs
+        for (int j = 0; j < existingVertex->SOMGetIncomingArcs()->getSize(); j++) {
+            CArc* existingArc = existingVertex->SOMGetIncomingArcs()->get(j);
+            newVertex->addLeavingArc(new CArc(existingArc->ARCGetDestination()));
+        }
+
+        // Copying leaving arcs to incoming arcs
+        for (int j = 0; j < existingVertex->SOMGetLeavingArcs()->getSize(); j++) {
+            CArc* existingArc = existingVertex->SOMGetLeavingArcs()->get(j);
+            newVertex->addIncomingArc(new CArc(existingArc->ARCGetDestination()));
+        }
+
+        // Adding the new vertex to the graph
+        graph->addVertex(newVertex);
+    }
+
+    return graph;
 }

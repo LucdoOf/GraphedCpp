@@ -143,6 +143,7 @@ CGraph* CGraphReader::GRRRead() {
                                     if (existingStartVertex != nullptr && existingEndVertex != nullptr) {
                                         CArc* arc = new CArc(existingEndVertex->SOMGetId());
                                         existingStartVertex->addLeavingArc(arc);
+                                        existingEndVertex->addIncomingArc(arc);
                                     } else {
                                         throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_UNKNOWN_VERTEX,strMultiCat(4,
                                                  "Syntax error at line ", itoa(fileLineCounter),

@@ -14,6 +14,7 @@ class CList {
 
 public:
     CList();
+    CList(const CList<T>&);
     ~CList();
     T get(int index);
     void add(T item);
@@ -102,6 +103,13 @@ void CList<T>::reallocItems() {
 template<typename T>
 bool CList<T>::contains(T item) {
     return this->indexOf(item) >= 0;
+}
+
+template<typename T>
+CList<T>::CList(const CList<T> &list) {
+    for (int i = 0; i < list.getSize(); i++) {
+        this->add(new T(list.get(i)));
+    }
 }
 
 

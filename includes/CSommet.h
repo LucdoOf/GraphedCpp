@@ -17,6 +17,8 @@ public:
     ~CSommet();
     void addIncomingArc(CArc* CArc);
     void addLeavingArc(CArc* CArc);
+    void deleteLeavingArc(CArc* arc);
+    void deleteIncomingArc(CArc* arc);
     CList<CArc*>* SOMGetIncomingArcs();
     CList<CArc*>* SOMGetLeavingArcs();
     int SOMGetId();
