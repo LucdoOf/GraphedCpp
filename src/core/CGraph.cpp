@@ -8,11 +8,9 @@ CGraph::CGraph() {
     this->pGRAVertices = new CList<CSommet*>();
 }
 
-CGraph::CGraph(const CGraph &graph) {
+CGraph::CGraph(CGraph &graph) {
     this->pGRAVertices = new CList<CSommet*>(*graph.pGRAVertices);
 }
-
-
 
 void CGraph::print() {
 
@@ -23,11 +21,10 @@ void CGraph::print() {
      * et ce jusqu'au moment ou on retombe sur le sommet "root" où bien jusqu'au moment ou il n'y à plus d'arc sortant.
      * A chaque fois que l'on passe sur un arc, on le supprime de la liste des arcs afin d'assurer le fonctionnement de l'algorithme.
      */
-
-    CGraph graph = CGraph(*this);
+    auto graph = new CGraph(*this);
 
     int rootIndex = 0;                                       // Index du root actuel dans la liste des sommets
-    CList<CSommet*>* vertexList = graph.GRAGetVertices();    // Liste de tout les sommets du graphe
+    CList<CSommet*>* vertexList = graph->GRAGetVertices();   // Liste de tout les sommets du graphe
     CList<CArc*>* arcActualList = nullptr;                   // Liste d'arc a traiter au cours de la prochaine itération
     int actualChainSize;                                     // Utilisé pour print le nombre de vertex de la chaîne
 
@@ -62,7 +59,7 @@ void CGraph::print() {
                             lastIteration = false;
                             break;
                         } else {
-                            tempList = graph.getVertexById(tempList->get(0)->ARCGetDestination())->SOMGetLeavingArcs();
+                            tempList = graph->getVertexById(tempList->get(0)->ARCGetDestination())->SOMGetLeavingArcs();
                         }
                     } else {
                         // Dernière liste de la chaîne
@@ -76,7 +73,7 @@ void CGraph::print() {
         } else {
             // Il reste des arcs a traiter on supprime l'arc actuel, on print, et on passe au prochain
             auto oldList = arcActualList;
-            CSommet* vertex = graph.getVertexById(oldList->get(0)->ARCGetDestination());
+            CSommet* vertex = graph->getVertexById(oldList->get(0)->ARCGetDestination());
             printf(" -> %d", vertex->SOMGetId());
             actualChainSize++;
             // On met à jour la liste

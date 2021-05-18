@@ -4,16 +4,21 @@
 
 #include "CSommet.h"
 
-inline CList<CArc*>* CSommet::SOMGetIncomingArcs() {
-    return this->pSOMIncoming;
+
+CSommet::CSommet(int iId) {
+    this->iId = iId;
+    this->pSOMIncoming = new CList<CArc*>();
+    this->pSOMLeaving = new CList<CArc*>();
 }
 
-inline CList<CArc*>* CSommet::SOMGetLeavingArcs() {
-    return this->pSOMLeaving;
+CSommet::CSommet(CSommet &vertex) {
+    this->pSOMIncoming = new CList<CArc*>(*vertex.pSOMIncoming);
+    this->pSOMLeaving = new CList<CArc*>(*vertex.pSOMLeaving);
 }
 
-int CSommet::SOMGetId() {
-    return iId;
+CSommet::~CSommet() {
+    delete this->pSOMIncoming;
+    delete this->pSOMLeaving;
 }
 
 void CSommet::addLeavingArc(CArc* arc) {
@@ -40,16 +45,6 @@ void CSommet::addIncomingArc(CArc* arc) {
     this->SOMGetIncomingArcs()->add(arc);
 }
 
-CSommet::CSommet(int iId) {
-    this->iId = iId;
-    this->pSOMIncoming = new CList<CArc*>();
-    this->pSOMLeaving = new CList<CArc*>();
-}
-
-CSommet::~CSommet() {
-
-}
-
 void CSommet::deleteLeavingArc(CArc *arc) {
     this->SOMGetLeavingArcs()->remove(arc);
 }
@@ -57,3 +52,10 @@ void CSommet::deleteLeavingArc(CArc *arc) {
 void CSommet::deleteIncomingArc(CArc *arc) {
     this->SOMGetIncomingArcs()->remove(arc);
 }
+
+
+inline CList<CArc*>* CSommet::SOMGetIncomingArcs() { return this->pSOMIncoming; }
+
+inline CList<CArc*>* CSommet::SOMGetLeavingArcs() { return this->pSOMLeaving; }
+
+int CSommet::SOMGetId() { return iId; }

@@ -14,7 +14,7 @@ private:
     CList<CSommet*>* pGRAVertices;
 public:
     CGraph();
-    CGraph(const CGraph&);
+    CGraph(CGraph&);
     void print();
     inline CList<CSommet*>* GRAGetVertices();
     void addVertex(CSommet* vertex);

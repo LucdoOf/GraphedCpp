@@ -8,6 +8,10 @@ CArc::CArc(int iARCDestination) {
     this->iARCDestination = iARCDestination;
 }
 
+CArc::CArc(CArc &arc) {
+    this->iARCDestination = arc.ARCGetDestination();
+}
+
 int CArc::ARCGetDestination() {
     return this->iARCDestination;
 }

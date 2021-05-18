@@ -12,6 +12,7 @@ private:
 
 public:
     CArc(int iARCDestination);
+    CArc(CArc &);
     ~CArc();
     int ARCGetDestination();
 

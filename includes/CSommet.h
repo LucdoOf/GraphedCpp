@@ -14,6 +14,7 @@ private:
 
 public:
     CSommet(int iId);
+    CSommet(CSommet&);
     ~CSommet();
     void addIncomingArc(CArc* CArc);
     void addLeavingArc(CArc* CArc);

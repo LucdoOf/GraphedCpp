@@ -14,7 +14,7 @@ class CList {
 
 public:
     CList();
-    CList(const CList<T>&);
+    CList(CList<T>&);
     ~CList();
     T get(int index);
     void add(T item);
@@ -22,7 +22,7 @@ public:
     void removeAt(int index);
     int indexOf(T item);
     bool contains(T item);
-    inline int getSize();
+    inline const int getSize() const;
     T shift(int index);
     T shift();
 
@@ -70,7 +70,7 @@ int CList<T>::indexOf(T item) {
 }
 
 template<typename T>
-inline int CList<T>::getSize() {
+inline const int CList<T>::getSize() const {
     return this->size;
 }
 
@@ -105,10 +105,20 @@ bool CList<T>::contains(T item) {
     return this->indexOf(item) >= 0;
 }
 
+#include <iostream>
+#include <type_traits>
+
 template<typename T>
-CList<T>::CList(const CList<T> &list) {
+CList<T>::CList(CList<T> &list) {
     for (int i = 0; i < list.getSize(); i++) {
-        this->add(new T(list.get(i)));
+        if (std::is_pointer<T>::value) {
+            // Recopie necessaire, on fait appel au constructeur de recopie
+            T newInstance = *(new T((list.get(i))));
+            this->add(newInstance);
+        } else {
+            // Objets gérés par valeur, on peux simplement ajouter l'objet
+            this->add(list.get(i));
+        }
     }
 }
 
