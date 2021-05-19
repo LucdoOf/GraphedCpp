@@ -11,12 +11,13 @@
 class CGraph {
 
 private:
-    CList<CSommet*>* pGRAVertices;
+    CList<CSommet>* pGRAVertices;
 public:
     CGraph();
     CGraph(CGraph&);
+    CSommet* getArcOrigin(CArc*);
     void print();
-    inline CList<CSommet*>* GRAGetVertices();
+    inline CList<CSommet>* GRAGetVertices();
     void addVertex(CSommet* vertex);
     void deleteVertex(CSommet* vertex);
     CSommet* getVertexById(int id);

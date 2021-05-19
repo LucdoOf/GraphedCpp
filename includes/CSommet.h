@@ -9,8 +9,8 @@ class CSommet {
 
 private:
     int iId;
-    CList<CArc*>* pSOMIncoming;
-    CList<CArc*>* pSOMLeaving;
+    CList<CArc>* pSOMIncoming;
+    CList<CArc>* pSOMLeaving;
 
 public:
     CSommet(int iId);
@@ -20,8 +20,8 @@ public:
     void addLeavingArc(CArc* CArc);
     void deleteLeavingArc(CArc* arc);
     void deleteIncomingArc(CArc* arc);
-    CList<CArc*>* SOMGetIncomingArcs();
-    CList<CArc*>* SOMGetLeavingArcs();
+    CList<CArc>* SOMGetIncomingArcs();
+    CList<CArc>* SOMGetLeavingArcs();
     int SOMGetId();
 
 };

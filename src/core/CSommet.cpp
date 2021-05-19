@@ -7,13 +7,14 @@
 
 CSommet::CSommet(int iId) {
     this->iId = iId;
-    this->pSOMIncoming = new CList<CArc*>();
-    this->pSOMLeaving = new CList<CArc*>();
+    this->pSOMIncoming = new CList<CArc>();
+    this->pSOMLeaving = new CList<CArc>();
 }
 
 CSommet::CSommet(CSommet &vertex) {
-    this->pSOMIncoming = new CList<CArc*>(*vertex.pSOMIncoming);
-    this->pSOMLeaving = new CList<CArc*>(*vertex.pSOMLeaving);
+    this->iId = vertex.iId;
+    this->pSOMIncoming = new CList<CArc>(*vertex.pSOMIncoming);
+    this->pSOMLeaving = new CList<CArc>(*vertex.pSOMLeaving);
 }
 
 CSommet::~CSommet() {
@@ -54,8 +55,8 @@ void CSommet::deleteIncomingArc(CArc *arc) {
 }
 
 
-inline CList<CArc*>* CSommet::SOMGetIncomingArcs() { return this->pSOMIncoming; }
+inline CList<CArc>* CSommet::SOMGetIncomingArcs() { return this->pSOMIncoming; }
 
-inline CList<CArc*>* CSommet::SOMGetLeavingArcs() { return this->pSOMLeaving; }
+inline CList<CArc>* CSommet::SOMGetLeavingArcs() { return this->pSOMLeaving; }
 
 int CSommet::SOMGetId() { return iId; }

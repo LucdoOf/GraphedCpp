@@ -14,7 +14,8 @@ int main(int argc, char** argv){
         auto reader = new CGraphReader(argv[1]);
         CGraph* graph = reader->GRRRead();
         graph->print();
-        graph->print();
+        CGraph* invertedGraph = graph->GRAInvert();
+        invertedGraph->print();
     } else {
         throw CGraphException(GRAPH_EXCEPTION_INVALID_PROGRAM_PARAMETERS, strMultiCat(3,
             "Example program need 1 parameter, given ", itoa(argc)));

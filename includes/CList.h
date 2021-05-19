@@ -16,27 +16,26 @@ public:
     CList();
     CList(CList<T>&);
     ~CList();
-    T get(int index);
-    void add(T item);
-    void remove(T item);
+    T* get(int index);
+    void add(T* item);
+    void remove(T* item);
     void removeAt(int index);
-    int indexOf(T item);
-    bool contains(T item);
+    int indexOf(T* item);
+    bool contains(T* item);
     inline const int getSize() const;
-    T shift(int index);
-    T shift();
+    T* shift(int index);
+    T* shift();
 
 private:
     void reallocItems();
-    int size;
-    T* items;
+    int size = 0;
+    T** items;
 
 };
 
 template<typename T>
 CList<T>::CList() {
-    this->size = 0;
-    this->items = (T*) malloc(sizeof(T));
+    this->items = (T**) malloc(sizeof(T));
 }
 
 template<typename T>
@@ -45,14 +44,14 @@ CList<T>::~CList() {
 }
 
 template<typename T>
-void CList<T>::add(T item) {
+void CList<T>::add(T* item) {
     this->size++;
     this->reallocItems();
     this->items[this->getSize() - 1] = item;
 }
 
 template<typename T>
-void CList<T>::remove(T item) {
+void CList<T>::remove(T* item) {
     this->shift(this->indexOf(item));
 }
 
@@ -62,7 +61,7 @@ void CList<T>::removeAt(int index) {
 }
 
 template<typename T>
-int CList<T>::indexOf(T item) {
+int CList<T>::indexOf(T* item) {
     for (int i = 0; i < size; i++) {
         if (this->items[i] == item) return i;
     }
@@ -75,8 +74,8 @@ inline const int CList<T>::getSize() const {
 }
 
 template<typename T>
-T CList<T>::shift(int index) {
-    T toReturn = this->get(index);
+T* CList<T>::shift(int index) {
+    T* toReturn = this->get(index);
     for (int i = index; i < this->getSize(); i++) {
         this->items[i] = this->items[i+1];
     }
@@ -86,39 +85,32 @@ T CList<T>::shift(int index) {
 }
 
 template<typename T>
-T CList<T>::get(int i) {
+T* CList<T>::get(int i) {
     return this->items[i];
 }
 
 template<typename T>
-T CList<T>::shift() {
+T* CList<T>::shift() {
     return this->shift(0);
 }
 
 template<typename T>
 void CList<T>::reallocItems() {
-    this->items = (T*) realloc(this->items, this->size * sizeof(T));
+    this->items = (T**) realloc(this->items, this->size * sizeof(T));
 }
 
 template<typename T>
-bool CList<T>::contains(T item) {
+bool CList<T>::contains(T* item) {
     return this->indexOf(item) >= 0;
 }
 
-#include <iostream>
-#include <type_traits>
-
 template<typename T>
 CList<T>::CList(CList<T> &list) {
+    this->items = (T**) malloc(sizeof(T));
     for (int i = 0; i < list.getSize(); i++) {
-        if (std::is_pointer<T>::value) {
-            // Recopie necessaire, on fait appel au constructeur de recopie
-            T newInstance = *(new T((list.get(i))));
-            this->add(newInstance);
-        } else {
-            // Objets gérés par valeur, on peux simplement ajouter l'objet
-            this->add(list.get(i));
-        }
+        // Recopie necessaire, on fait appel au constructeur de recopie
+        T* newInstance = new T(*list.get(i));
+        this->add(newInstance);
     }
 }
 

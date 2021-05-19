@@ -5,11 +5,11 @@
 #include "CGraph.h"
 
 CGraph::CGraph() {
-    this->pGRAVertices = new CList<CSommet*>();
+    this->pGRAVertices = new CList<CSommet>();
 }
 
 CGraph::CGraph(CGraph &graph) {
-    this->pGRAVertices = new CList<CSommet*>(*graph.pGRAVertices);
+    this->pGRAVertices = new CList<CSommet>(*graph.pGRAVertices);
 }
 
 void CGraph::print() {
@@ -23,10 +23,10 @@ void CGraph::print() {
      */
     auto graph = new CGraph(*this);
 
-    int rootIndex = 0;                                       // Index du root actuel dans la liste des sommets
-    CList<CSommet*>* vertexList = graph->GRAGetVertices();   // Liste de tout les sommets du graphe
-    CList<CArc*>* arcActualList = nullptr;                   // Liste d'arc a traiter au cours de la prochaine itération
-    int actualChainSize;                                     // Utilisé pour print le nombre de vertex de la chaîne
+    int rootIndex = 0;                                            // Index du root actuel dans la liste des sommets
+    CList<CSommet>* vertexList = graph->GRAGetVertices();         // Liste de tout les sommets du graphe
+    CList<CArc>* arcActualList = nullptr;                         // Liste d'arc a traiter au cours de la prochaine itération
+    int actualChainSize;                                          // Utilisé pour print le nombre de vertex de la chaîne
 
     while (true) {
         // Fin de la chaîne courante ou début du parcours (arcActualList est nulle au tout début)
@@ -51,7 +51,7 @@ void CGraph::print() {
                 // On ne peux pas encore changer de root à la prochaine itération, il faudra 2 itérations pour print toutes
                 // les chaînes partant de ce root.
                 bool lastIteration = true;
-                CList<CArc*>* tempList = arcActualList;
+                CList<CArc>* tempList = arcActualList;
                 while (tempList != nullptr) {
                     // Prevent infinite loop
                     if (tempList->getSize() >= 1 && tempList->get(0)->ARCGetDestination() != vertexList->get(rootIndex)->SOMGetId()) {
@@ -86,7 +86,7 @@ void CGraph::print() {
     }
 }
 
-inline CList<CSommet*>* CGraph::GRAGetVertices() {
+inline CList<CSommet>* CGraph::GRAGetVertices() {
     return this->pGRAVertices;
 }
 
@@ -118,28 +118,39 @@ void CGraph::deleteVertex(CSommet *vertex) {
 }
 
 CGraph *CGraph::GRAInvert() {
-    auto graph = new CGraph();
+    auto graph = new CGraph(*this);
 
     // Loop through existing vertices
     for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
-        CSommet* existingVertex = this->GRAGetVertices()->get(i);
-        auto newVertex = new CSommet(existingVertex->SOMGetId());
+        CSommet* currentVertex = graph->GRAGetVertices()->get(i);
 
         // Copying incoming arcs to leaving arcs
-        for (int j = 0; j < existingVertex->SOMGetIncomingArcs()->getSize(); j++) {
-            CArc* existingArc = existingVertex->SOMGetIncomingArcs()->get(j);
-            newVertex->addLeavingArc(new CArc(existingArc->ARCGetDestination()));
+        for (int j = 0; j < currentVertex->SOMGetIncomingArcs()->getSize(); j++) {
+            CSommet* arcOrigin = graph->getArcOrigin(currentVertex->SOMGetIncomingArcs()->get(j));
+
+            arcOrigin->addIncomingArc(new CArc(arcOrigin->SOMGetId()));
+            currentVertex->addLeavingArc(new CArc(arcOrigin->SOMGetId()));
         }
 
         // Copying leaving arcs to incoming arcs
-        for (int j = 0; j < existingVertex->SOMGetLeavingArcs()->getSize(); j++) {
-            CArc* existingArc = existingVertex->SOMGetLeavingArcs()->get(j);
-            newVertex->addIncomingArc(new CArc(existingArc->ARCGetDestination()));
-        }
+        for (int j = 0; j < currentVertex->SOMGetLeavingArcs()->getSize(); j++) {
+            CSommet* arcOrigin = graph->getArcOrigin(currentVertex->SOMGetLeavingArcs()->get(j));
 
-        // Adding the new vertex to the graph
-        graph->addVertex(newVertex);
+            arcOrigin->addLeavingArc(new CArc(currentVertex->SOMGetId()));
+            currentVertex->addIncomingArc(new CArc(currentVertex->SOMGetId()));
+        }
     }
 
     return graph;
+}
+
+CSommet *CGraph::getArcOrigin(CArc* arc) {
+    for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
+        CSommet* vertex = this->GRAGetVertices()->get(i);
+        for (int j = 0; j < vertex->SOMGetLeavingArcs()->getSize(); j++) {
+            CArc* existingArc = vertex->SOMGetLeavingArcs()->get(j);
+            if (arc == existingArc) return vertex;
+        }
+    }
+    return nullptr;
 }
