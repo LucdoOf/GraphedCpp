@@ -8,21 +8,86 @@
 class CSommet {
 
 private:
-    int iId;
+    /**
+     * Vertex identifier
+     */
+    int iSOMId;
+    /**
+     * List of incoming arcs
+     */
     CList<CArc>* pSOMIncoming;
+    /**
+     * List of leaving arcs
+     */
     CList<CArc>* pSOMLeaving;
 
 public:
-    CSommet(int iId);
+    /**
+     * CSommet constructor
+     *
+     * @param iSOMId Vertex identifier
+     */
+    explicit CSommet(int iSOMId);
+    /**
+     * CSommet copy constructor
+     *
+     * Copy the list of leaving and incoming arc
+     */
     CSommet(CSommet&);
+    /**
+     * CSommet destructor
+     *
+     * Delete the incoming and leaving arc.
+     * Please don't use this if you want to remove the vertex from the graph,
+     * use the removeVertex method from graph class
+     */
     ~CSommet();
-    void addIncomingArc(CArc* CArc);
-    void addLeavingArc(CArc* CArc);
-    void deleteLeavingArc(CArc* arc);
-    void deleteIncomingArc(CArc* arc);
+    /**
+     * Add an incoming arc to the vertex
+     *
+     * @param CArc New incoming arc (don't add duplicates)
+     */
+    void SOMAddIncomingArc(CArc* CArc);
+    /**
+     * Add a leaving arc to the vertex
+     *
+     * @param CArc New leaving arc (don't add duplicates)
+     */
+    void SOMAddLeavingArc(CArc* CArc);
+    /**
+     * Remove an incoming arc from the vertex
+     *
+     * @param arc Incoming arc to remove (delete the arc)
+     */
+    void SOMDeleteIncomingArc(CArc* arc);
+    /**
+     * Remove a leaving arc from the vertex
+     *
+     * @param arc Leaving arc to remove (delete the arc)
+     */
+    void SOMDeleteLeavingArc(CArc* arc);
+    /**
+     * Retrieves the list of the vertex incoming arcs
+     *
+     * @warning It is not recommended to change the list content, this list is given only for getting purposes,
+     * any direct modifications will cause the vertex / graph to be corrupted, please use vertex methods instead
+     * @return The list of the incoming vertex arcs
+     */
     CList<CArc>* SOMGetIncomingArcs();
+    /**
+     * Retrieves the list of the vertex leaving arcs
+     *
+     * @warning It is not recommended to change the list content, this list is given only for getting purposes,
+     * any direct modifications will cause the vertex / graph to be corrupted, please use vertex methods instead
+     * @return The list of the leaving vertex arcs
+     */
     CList<CArc>* SOMGetLeavingArcs();
-    int SOMGetId();
+    /**
+     * Retrieves the vertex identifier
+     *
+     * @return The vertex identifier
+     */
+    int SOMGetId() const;
 
 };
 

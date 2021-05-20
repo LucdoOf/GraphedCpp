@@ -106,7 +106,7 @@ CGraph* CGraphReader::GRRRead() {
                             int vertexId = 0;
                             if (sscanf(buffer, "Numero=%d", &vertexId) == 1) {
                                 actualGraphVertexCounter++;
-                                graph->addVertex(new CSommet(vertexId));
+                                graph->GRAAddVertex(new CSommet(vertexId));
                             } else {
                                 throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT, strMultiCat(4,
                                                "Syntax error at line ", itoa(fileLineCounter),
@@ -138,12 +138,11 @@ CGraph* CGraphReader::GRRRead() {
                                 int endVertexId = 0;
                                 if (sscanf(buffer, "Debut=%d, Fin=%d", &startVertexId, &endVertexId) == 2) {
                                     actualGraphArcCounter++;
-                                    CSommet* existingStartVertex = graph->getVertexById(startVertexId);
-                                    CSommet* existingEndVertex = graph->getVertexById(endVertexId);
+                                    CSommet* existingStartVertex = graph->GRAGetVertexById(startVertexId);
+                                    CSommet* existingEndVertex = graph->GRAGetVertexById(endVertexId);
                                     if (existingStartVertex != nullptr && existingEndVertex != nullptr) {
-                                        CArc* arc = new CArc(existingEndVertex->SOMGetId());
-                                        existingStartVertex->addLeavingArc(arc);
-                                        existingEndVertex->addIncomingArc(arc);
+                                        existingEndVertex->SOMAddIncomingArc(new CArc(existingEndVertex->SOMGetId()));
+                                        existingStartVertex->SOMAddLeavingArc(new CArc(existingEndVertex->SOMGetId()));
                                     } else {
                                         throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_UNKNOWN_VERTEX,strMultiCat(4,
                                                  "Syntax error at line ", itoa(fileLineCounter),

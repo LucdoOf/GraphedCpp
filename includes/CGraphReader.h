@@ -30,7 +30,7 @@ private:
     /**
      * Temporary file buffer for inner operations
      */
-    FILE* pGRRFile;
+    FILE* pGRRFile = nullptr;
     /**
      * Opens a file stream if the provided file has not been opened yet,
      * then returns the provided file as a FILE pointer

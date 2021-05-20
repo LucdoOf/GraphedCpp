@@ -5,36 +5,44 @@
 #include "CSommet.h"
 
 
-CSommet::CSommet(int iId) {
-    this->iId = iId;
+/**
+ * CSommet constructor
+ *
+ * @param iSOMId Vertex identifier
+ */
+CSommet::CSommet(int iSOMId) {
+    this->iSOMId = iSOMId;
     this->pSOMIncoming = new CList<CArc>();
     this->pSOMLeaving = new CList<CArc>();
 }
 
+/**
+ * CSommet copy constructor
+ *
+ * Copy the list of leaving and incoming arc
+ */
 CSommet::CSommet(CSommet &vertex) {
-    this->iId = vertex.iId;
+    this->iSOMId = vertex.iSOMId;
     this->pSOMIncoming = new CList<CArc>(*vertex.pSOMIncoming);
     this->pSOMLeaving = new CList<CArc>(*vertex.pSOMLeaving);
 }
 
+/**
+ * CSommet destructor
+ *
+ * Delete the incoming and leaving arc
+ */
 CSommet::~CSommet() {
     delete this->pSOMIncoming;
     delete this->pSOMLeaving;
 }
 
-void CSommet::addLeavingArc(CArc* arc) {
-    for (int i = 0; i < this->SOMGetLeavingArcs()->getSize(); i++) {
-        CArc* existingArc = this->SOMGetLeavingArcs()->get(i);
-        if (existingArc->ARCGetDestination() == arc->ARCGetDestination()) {
-            // On évite les doublons pour des problèmes de boucles infinies lors des traitements, de plus ils sont inutiles
-            // Cependant on ne lève pas d'erreur, ce n'est pas un problème grave
-            return;
-        }
-    }
-    this->SOMGetLeavingArcs()->add(arc);
-}
-
-void CSommet::addIncomingArc(CArc* arc) {
+/**
+ * Add an incoming arc to the vertex
+ *
+ * @param CArc New incoming arc (don't add duplicates)
+ */
+void CSommet::SOMAddIncomingArc(CArc* arc) {
     for (int i = 0; i < this->SOMGetIncomingArcs()->getSize(); i++) {
         CArc* existingArc = this->SOMGetIncomingArcs()->get(i);
         if (existingArc->ARCGetDestination() == arc->ARCGetDestination()) {
@@ -46,17 +54,62 @@ void CSommet::addIncomingArc(CArc* arc) {
     this->SOMGetIncomingArcs()->add(arc);
 }
 
-void CSommet::deleteLeavingArc(CArc *arc) {
-    this->SOMGetLeavingArcs()->remove(arc);
+/**
+ * Add a leaving arc to the vertex
+ *
+ * @param CArc New leaving arc (don't add duplicates)
+ */
+void CSommet::SOMAddLeavingArc(CArc* arc) {
+    for (int i = 0; i < this->SOMGetLeavingArcs()->getSize(); i++) {
+        CArc* existingArc = this->SOMGetLeavingArcs()->get(i);
+        if (existingArc->ARCGetDestination() == arc->ARCGetDestination()) {
+            // On évite les doublons pour des problèmes de boucles infinies lors des traitements, de plus ils sont inutiles
+            // Cependant on ne lève pas d'erreur, ce n'est pas un problème grave
+            return;
+        }
+    }
+    this->SOMGetLeavingArcs()->add(arc);
 }
 
-void CSommet::deleteIncomingArc(CArc *arc) {
+/**
+ * Remove an incoming arc from the vertex
+ *
+ * @param arc Incoming arc to remove (delete the arc)
+ */
+void CSommet::SOMDeleteIncomingArc(CArc *arc) {
     this->SOMGetIncomingArcs()->remove(arc);
 }
 
+/**
+ * Remove a leaving arc from the vertex
+ *
+ * @param arc Leaving arc to remove (delete the arc)
+ */
+void CSommet::SOMDeleteLeavingArc(CArc *arc) {
+    this->SOMGetLeavingArcs()->remove(arc);
+}
 
-inline CList<CArc>* CSommet::SOMGetIncomingArcs() { return this->pSOMIncoming; }
+/**
+ * Retrieves the list of the vertex incoming arcs
+ *
+ * @warning It is not recommended to change the list content, this list is given only for getting purposes,
+ * any direct modifications will cause the vertex / graph to be corrupted, please use vertex methods instead
+ * @return The list of the incoming vertex arcs
+ */
+CList<CArc>* CSommet::SOMGetIncomingArcs() { return this->pSOMIncoming; }
 
-inline CList<CArc>* CSommet::SOMGetLeavingArcs() { return this->pSOMLeaving; }
+/**
+ * Retrieves the list of the vertex leaving arcs
+ *
+ * @warning It is not recommended to change the list content, this list is given only for getting purposes,
+ * any direct modifications will cause the vertex / graph to be corrupted, please use vertex methods instead
+ * @return The list of the leaving vertex arcs
+ */
+CList<CArc>* CSommet::SOMGetLeavingArcs() { return this->pSOMLeaving; }
 
-int CSommet::SOMGetId() { return iId; }
+/**
+ * Retrieves the vertex identifier
+ *
+ * @return The vertex identifier
+ */
+int CSommet::SOMGetId() const { return this->iSOMId; }
