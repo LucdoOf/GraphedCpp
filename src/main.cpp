@@ -25,7 +25,7 @@ int main(int argc, char** argv){
             printf("\nFlow amounts:\n");
             graph->GRAAskFlowAmounts();
             bool test = graph->GRATestConservationLaw();
-            printf(test ? "\nThe graph have passed the conservation law !\n" : "\nThe graph didn't passed the conservation law :(\n");
+            printf(test ? "\nThe graph has passed the conservation law !\n" : "\nThe graph didn't passed the conservation law :(\n");
             printf("The graph total cost is %d\n", graph->GRAGetTotalCost());
             printf("\nDetails:\n");
             graph->GRAPrintConservationLaw();
