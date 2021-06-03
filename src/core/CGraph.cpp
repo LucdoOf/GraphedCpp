@@ -238,26 +238,16 @@ CGraph *CGraph::GRAInvert() {
 /**
  * Ask the user for the flow amount of every arc in the graph
  */
-void CGraph::askFlowAmounts() {
+void CGraph::GRAAskFlowAmounts() {
     for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
         CSommet* vertex = this->GRAGetVertices()->get(i);
-        // Loop through incoming and leaving arcs
-        for (int j = 0; j < vertex->SOMGetIncomingArcs()->getSize() + vertex->SOMGetLeavingArcs()->getSize(); j++) {
-            CArc* arc = j >= vertex->SOMGetIncomingArcs()->getSize() ?
-                    vertex->SOMGetLeavingArcs()->get(j - vertex->SOMGetIncomingArcs()->getSize()) :
-                    vertex->SOMGetIncomingArcs()->get(j);
-            int arcOrigin = this->GRAGetArcOrigin(arc)->SOMGetId();
-            int arcDestination = arc->ARCGetDestination();
+        // Loop through incoming
+        for (int j = 0; j < vertex->SOMGetLeavingArcs()->getSize(); j++) {
+            CArc* arc = vertex->SOMGetLeavingArcs()->get(j);
             int flow = 0;
-            printf("%s", strMultiCat(5, "\nFlow amount for the arc ", itoa(arcOrigin), " -> ", itoa(arcDestination), ": "));
+            printf("%s", strMultiCat(5, "Flow amount for the arc ", itoa(vertex->SOMGetId()), " -> ", itoa(arc->ARCGetDestination()), ": "));
             scanf("%d", &flow);
-            if (flow > 0 || flow > arc->ARCGetMaximumFlow()) {
-                arc->ARCSetTemporaryFlow(flow);
-            } else {
-                throw CGraphException(GRAPH_EXCEPTION_WRONG_ARC_ATTRIBUTES, strMultiCat(4,
-                    "Wrong flow, the flow must be strictly positive and less than the arc maximum supported flow which is ",
-                    itoa(arc->ARCGetMaximumFlow()), " ! (entered ", itoa(flow), ")"));
-            }
+            arc->ARCSetTemporaryFlow(flow);
         }
     }
 }
@@ -267,11 +257,20 @@ void CGraph::askFlowAmounts() {
  *
  * @return True if the conservation law is respected, false if it isn't
  */
-bool CGraph::checkConservationLaw() {
+bool CGraph::GRATestConservationLaw() {
     for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
-        if (!this->GRAGetVertices()->get(i)->checkConservationLaw()) return false;
+        if (!this->GRAGetVertices()->get(i)->SOMTestConservationLaw()) return false;
     }
     return true;
+}
+
+/**
+ * Print every step of the conservation law test process
+ */
+void CGraph::GRAPrintConservationLaw() {
+    for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
+        this->GRAGetVertices()->get(i)->SOMPrintConservationLaw();
+    }
 }
 
 /**
@@ -279,14 +278,10 @@ bool CGraph::checkConservationLaw() {
  *
  * @return the amount of the total cost for the actual flow
  */
-int CGraph::getTotalCost() {
+int CGraph::GRAGetTotalCost() {
     int totalCost = 0;
     for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
         CSommet* vertex = this->GRAGetVertices()->get(i);
-        for (int j = 0; j < vertex->SOMGetIncomingArcs()->getSize(); j++) {
-            CArc* arc = vertex->SOMGetIncomingArcs()->get(j);
-            totalCost+= arc->ARCGetTemporaryFlow() * arc->ARCGetCost();
-        }
         for (int j = 0; j < vertex->SOMGetLeavingArcs()->getSize(); j++) {
             CArc* arc = vertex->SOMGetLeavingArcs()->get(j);
             totalCost+= arc->ARCGetTemporaryFlow() * arc->ARCGetCost();

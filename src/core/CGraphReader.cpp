@@ -144,10 +144,10 @@ CGraph* CGraphReader::GRRRead() {
                                     CSommet* existingEndVertex = graph->GRAGetVertexById(endVertexId);
                                     if (existingStartVertex != nullptr && existingEndVertex != nullptr) {
                                         if (cost > 0 && maximumFlow > 0) {
-                                            existingEndVertex->SOMAddIncomingArc(
-                                                    new CArc(existingEndVertex->SOMGetId(), cost, maximumFlow));
-                                            existingStartVertex->SOMAddLeavingArc(
-                                                    new CArc(existingEndVertex->SOMGetId(), cost, maximumFlow));
+                                            CArc* arc = new CArc(existingEndVertex->SOMGetId(), cost, maximumFlow);
+                                            existingEndVertex->SOMAddIncomingArc(arc);
+                                            existingStartVertex->SOMAddLeavingArc(arc);
+                                            printf("Adding incoming for %d (%d) New size: %d\n", existingEndVertex->SOMGetId(), existingStartVertex->SOMGetId(), existingEndVertex->SOMGetIncomingArcs()->getSize());
                                         } else {
                                             throw CGraphException(GRAPH_EXCEPTION_WRONG_ARC_ATTRIBUTES, strMultiCat(4,
                                                 "Syntax error at line ", itoa(fileLineCounter),

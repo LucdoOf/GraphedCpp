@@ -90,19 +90,23 @@ public:
     /**
      * Ask the user for the flow amount of every arc in the graph
      */
-    void askFlowAmounts();
+    void GRAAskFlowAmounts();
     /**
      * Check the incoming and leaving arcs of each vertices for the conversation law
      *
      * @return True if the conservation law is respected, false if it isn't
      */
-    bool checkConservationLaw();
+    bool GRATestConservationLaw();
+    /**
+     * Print every step of the conservation law test process
+     */
+    void GRAPrintConservationLaw();
     /**
      * Retrieves the amount of the total cost for the actual flow
      *
      * @return the amount of the total cost for the actual flow
      */
-    int getTotalCost();
+    int GRAGetTotalCost();
 
 };
 #endif //MATRIXEDCPP_CGRAPHE_H

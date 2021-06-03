@@ -42,14 +42,6 @@ CSommet::~CSommet() {
  * @param CArc New incoming arc (don't add duplicates)
  */
 void CSommet::SOMAddIncomingArc(CArc* arc) {
-    for (int i = 0; i < this->SOMGetIncomingArcs()->getSize(); i++) {
-        CArc* existingArc = this->SOMGetIncomingArcs()->get(i);
-        if (existingArc->ARCGetDestination() == arc->ARCGetDestination()) {
-            // On évite les doublons pour des problèmes de boucles infinies lors des traitements, de plus ils sont inutiles
-            // Cependant on ne lève pas d'erreur, ce n'est pas un problème grave
-            return;
-        }
-    }
     this->SOMGetIncomingArcs()->add(arc);
 }
 
@@ -118,14 +110,44 @@ int CSommet::SOMGetId() const { return this->iSOMId; }
  *
  * @return True if the conservation law is respected, false if it isn't
  */
-bool CSommet::checkConservationLaw() {
+bool CSommet::SOMTestConservationLaw() {
+    // On ne teste pas les puits ou les sources
+    if (this->SOMGetIncomingArcs()->getSize() == 0 || this->SOMGetLeavingArcs()->getSize() == 0) return true;
+    return this->SOMComputeTemporaryIncomingFlow() == this->SOMComputeTemporaryLeavingFlow();
+}
+
+/**
+ * Print the result of the conservation law test
+ */
+void CSommet::SOMPrintConservationLaw() {
+    printf("Vertex %d: Incoming flow=%d Leaving flow=%d\n",
+           this->SOMGetId(),
+           this->SOMComputeTemporaryIncomingFlow(),
+           this->SOMComputeTemporaryLeavingFlow());
+}
+
+/**
+ * Compute and retrieves the temporary incoming flow
+ *
+ * @return The temporary incoming flow
+ */
+int CSommet::SOMComputeTemporaryIncomingFlow() {
     int incomingFlow = 0;
-    int leavingFlow = 0;
     for (int i = 0; i < this->SOMGetIncomingArcs()->getSize(); i++) {
         incomingFlow += this->SOMGetIncomingArcs()->get(i)->ARCGetTemporaryFlow();
     }
+    return incomingFlow;
+}
+
+/**
+ * Compute and retrieves the temporary leaving flow
+ *
+ * @return The temporary leaving flow
+ */
+int CSommet::SOMComputeTemporaryLeavingFlow() {
+    int leavingFlow = 0;
     for (int i = 0; i < this->SOMGetLeavingArcs()->getSize(); i++) {
         leavingFlow += this->SOMGetLeavingArcs()->get(i)->ARCGetTemporaryFlow();
     }
-    return incomingFlow == leavingFlow;
+    return leavingFlow;
 }

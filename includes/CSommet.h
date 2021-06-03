@@ -93,7 +93,23 @@ public:
      *
      * @return True if the conservation law is respected, false if it isn't
      */
-    bool checkConservationLaw();
+    bool SOMTestConservationLaw();
+    /**
+     * Print the result of the conservation law test
+     */
+    void SOMPrintConservationLaw();
+    /**
+     * Compute and retrieves the temporary incoming flow
+     *
+     * @return The temporary incoming flow
+     */
+    int SOMComputeTemporaryIncomingFlow();
+    /**
+     * Compute and retrieves the temporary leaving flow
+     *
+     * @return The temporary leaving flow
+     */
+    int SOMComputeTemporaryLeavingFlow();
 
 };
 

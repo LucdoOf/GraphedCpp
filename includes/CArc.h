@@ -5,6 +5,10 @@
 #ifndef MATRIXEDCPP_CARC_H
 #define MATRIXEDCPP_CARC_H
 
+#include "defines.h"
+#include "CGraphException.h"
+#include "string_utils.h"
+
 /**
  * CArc class
  *

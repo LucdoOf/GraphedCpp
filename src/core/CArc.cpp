@@ -57,7 +57,13 @@ int CArc::ARCGetMaximumFlow() const {
  * @param iTemporaryFlow New value of the temporary value
  */
 void CArc::ARCSetTemporaryFlow(int iTemporaryFlow) {
-    this->iTempFlow = iTemporaryFlow;
+    if (iTemporaryFlow <= 0 || iTemporaryFlow > this->ARCGetMaximumFlow()) {
+        throw CGraphException(GRAPH_EXCEPTION_WRONG_ARC_ATTRIBUTES, strMultiCat(4,
+            "Wrong flow, the flow must be strictly positive and less than the arc maximum supported flow which is ",
+            itoa(this->ARCGetMaximumFlow()), " ! (entered ", itoa(iTemporaryFlow), ")"));
+    } else {
+        this->iTempFlow = iTemporaryFlow;
+    }
 }
 
 /**
