@@ -12,10 +12,10 @@ Numero=8
 Numero=9
 ]
 Arcs=[
-Debut=2, Fin=3
-Debut=3, Fin=5
-Debut=5, Fin=3
-Debut=3, Fin=2
-Debut=3, Fin=8
-Debut=8, Fin=2
+Debut=2, Fin=3, Cout=2, FlotMaximum=5
+Debut=3, Fin=5, Cout=3, FlotMaximum=2
+Debut=5, Fin=3, Cout=8, FlotMaximum=25
+Debut=3, Fin=2, Cout=1, FlotMaximum=3
+Debut=3, Fin=8, Cout=43, FlotMaximum=2
+Debut=8, Fin=2, Cout=6, FlotMaximum=8
 ]

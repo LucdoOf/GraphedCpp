@@ -21,6 +21,19 @@ private:
      * Identifier of the destination vertex
      */
     int iARCDestination;
+    /**
+     * Unitary cost of the arc
+     */
+    int iCost;
+    /**
+     * Maximum flow supported by the arc
+     */
+    int iMaximumFlow;
+    /**
+     * Temporary flow amount, used to test the conservation law and the maximum flow.
+     * Be aware that this variable is temporary and its content will be removed someday
+     */
+    int iTempFlow;
 
 public:
     /**
@@ -28,7 +41,7 @@ public:
      *
      * @param iARCDestination Destination vertex identifier
      */
-    explicit CArc(int iARCDestination);
+    explicit CArc(int iARCDestination, int iCost, int iMaximumFlow);
     /**
      * CArc copy constructor
      */
@@ -43,6 +56,30 @@ public:
      * @return The identifier of the destination vertex
      */
     int ARCGetDestination() const;
+    /**
+     * Retrieves the unitary cost of the arc
+     *
+     * @return The unitary cost of the arc
+     */
+    int ARCGetCost() const;
+    /**
+     * Retrieves the maximum flow supported by the arc
+     *
+     * @return The maximum flow supported by the arc
+     */
+    int ARCGetMaximumFlow() const;
+    /**
+     * Set the temporary flow value of the arc
+     *
+     * @param iTemporaryFlow New value of the temporary value
+     */
+    void ARCSetTemporaryFlow(int iTemporaryFlow);
+    /**
+     * Retrieves the temporary flow value of the arc
+     *
+     * @return The temporary flow value of the arc
+     */
+    int ARCGetTemporaryFlow() const;
 
 };
 

@@ -14,12 +14,12 @@ using namespace std;
 int main(int argc, char** argv){
     try {
         if (argc == 2) {
-            printf("Graph %s:", argv[1]);
+            printf("Graph %s: ", argv[1]);
             auto reader = new CGraphReader(argv[1]);
             CGraph* graph = reader->GRRRead();
             graph->GRAPrint();
             printf("\n");
-            printf("Graph %s inverted:", argv[1]);
+            printf("Graph %s inverted: ", argv[1]);
             CGraph* invertedGraph = graph->GRAInvert();
             invertedGraph->GRAPrint();
             delete reader;

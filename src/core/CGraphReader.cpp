@@ -136,13 +136,23 @@ CGraph* CGraphReader::GRRRead() {
                             else {
                                 int startVertexId = 0;
                                 int endVertexId = 0;
-                                if (sscanf(buffer, "Debut=%d, Fin=%d", &startVertexId, &endVertexId) == 2) {
+                                int cost = 0;
+                                int maximumFlow = 0;
+                                if (sscanf(buffer, "Debut=%d, Fin=%d, Cout=%d, FlotMaximum=%d", &startVertexId, &endVertexId, &cost, &maximumFlow) == 4) {
                                     actualGraphArcCounter++;
                                     CSommet* existingStartVertex = graph->GRAGetVertexById(startVertexId);
                                     CSommet* existingEndVertex = graph->GRAGetVertexById(endVertexId);
                                     if (existingStartVertex != nullptr && existingEndVertex != nullptr) {
-                                        existingEndVertex->SOMAddIncomingArc(new CArc(existingEndVertex->SOMGetId()));
-                                        existingStartVertex->SOMAddLeavingArc(new CArc(existingEndVertex->SOMGetId()));
+                                        if (cost > 0 && maximumFlow > 0) {
+                                            existingEndVertex->SOMAddIncomingArc(
+                                                    new CArc(existingEndVertex->SOMGetId(), cost, maximumFlow));
+                                            existingStartVertex->SOMAddLeavingArc(
+                                                    new CArc(existingEndVertex->SOMGetId(), cost, maximumFlow));
+                                        } else {
+                                            throw CGraphException(GRAPH_EXCEPTION_WRONG_ARC_ATTRIBUTES, strMultiCat(4,
+                                                "Syntax error at line ", itoa(fileLineCounter),
+                                                " wrong cost or maximum flow ", buffer));
+                                        }
                                     } else {
                                         throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_UNKNOWN_VERTEX,strMultiCat(4,
                                                  "Syntax error at line ", itoa(fileLineCounter),
@@ -152,7 +162,7 @@ CGraph* CGraphReader::GRRRead() {
                                 } else {
                                     throw CGraphException(GRAPH_EXCEPTION_DESERIALIZATION_WRONG_FILE_FORMAT,strMultiCat(4,
                                                   "Syntax error at line ", itoa(fileLineCounter),
-                                                  R"(, expected "Debut=[int], Fin=[int]" got ")",
+                                                  R"(, expected "Debut=[int], Fin=[int], Cout=[int], FlotMaximum=[int]" got ")",
                                                   buffer));
                                 }
                             }

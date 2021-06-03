@@ -50,5 +50,9 @@
  * Thrown when an arc starts or ends by an unknown vertex
  */
 #define GRAPH_EXCEPTION_DESERIALIZATION_UNKNOWN_VERTEX 6
+/**
+ * Thrown when the cost or the maximum flow of an arc is negative or null
+ */
+#define GRAPH_EXCEPTION_WRONG_ARC_ATTRIBUTES 7
 
 #endif //GRAPHEDCPP_DEFINES_H

@@ -4,7 +4,6 @@
 
 #include "CSommet.h"
 
-
 /**
  * CSommet constructor
  *
@@ -113,3 +112,20 @@ CList<CArc>* CSommet::SOMGetLeavingArcs() { return this->pSOMLeaving; }
  * @return The vertex identifier
  */
 int CSommet::SOMGetId() const { return this->iSOMId; }
+
+/**
+ * Check the incoming and leaving arcs for the conversation law
+ *
+ * @return True if the conservation law is respected, false if it isn't
+ */
+bool CSommet::checkConservationLaw() {
+    int incomingFlow = 0;
+    int leavingFlow = 0;
+    for (int i = 0; i < this->SOMGetIncomingArcs()->getSize(); i++) {
+        incomingFlow += this->SOMGetIncomingArcs()->get(i)->ARCGetTemporaryFlow();
+    }
+    for (int i = 0; i < this->SOMGetLeavingArcs()->getSize(); i++) {
+        leavingFlow += this->SOMGetLeavingArcs()->get(i)->ARCGetTemporaryFlow();
+    }
+    return incomingFlow == leavingFlow;
+}

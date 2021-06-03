@@ -206,29 +206,96 @@ CGraph *CGraph::GRAInvert() {
 
         // Copying incoming arcs to leaving arcs
         for (int j = 0; j < currentVertex->SOMGetIncomingArcs()->getSize(); j++) {
-            CSommet* arcOriginVertex = this->GRAGetArcOrigin(currentVertex->SOMGetIncomingArcs()->get(j));
+            CArc* oldArc = currentVertex->SOMGetIncomingArcs()->get(j);
+            CSommet* arcOriginVertex = this->GRAGetArcOrigin(oldArc);
             CSommet* newOriginVertex = graph->GRAGetVertexById(arcOriginVertex->SOMGetId());
             // Add the vertex if not already added
             if (newOriginVertex == nullptr) {
                 newOriginVertex = new CSommet(arcOriginVertex->SOMGetId());
                 graph->GRAAddVertex(newOriginVertex);
             }
-            newVertex->SOMAddLeavingArc(new CArc(newOriginVertex->SOMGetId()));
+            newVertex->SOMAddLeavingArc(new CArc(newOriginVertex->SOMGetId(), oldArc->ARCGetCost(), oldArc->ARCGetMaximumFlow()));
         }
 
         // Copying leaving arcs to incoming arcs
         for (int j = 0; j < currentVertex->SOMGetLeavingArcs()->getSize(); j++) {
-            int destinationId = currentVertex->SOMGetLeavingArcs()->get(j)->ARCGetDestination();
+            CArc* oldArc = currentVertex->SOMGetLeavingArcs()->get(j);
+            int destinationId = oldArc->ARCGetDestination();
             CSommet* newArcDestinationVertex = graph->GRAGetVertexById(destinationId);
             // Add the vertex if not already added
             if (newArcDestinationVertex == nullptr) {
                 newArcDestinationVertex = new CSommet(destinationId);
                 graph->GRAAddVertex(newArcDestinationVertex);
             }
-            newVertex->SOMAddIncomingArc(new CArc(newVertex->SOMGetId()));
+            newVertex->SOMAddIncomingArc(new CArc(newVertex->SOMGetId(), oldArc->ARCGetCost(), oldArc->ARCGetMaximumFlow()));
         }
 
     }
 
     return graph;
 }
+
+/**
+ * Ask the user for the flow amount of every arc in the graph
+ */
+void CGraph::askFlowAmounts() {
+    for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
+        CSommet* vertex = this->GRAGetVertices()->get(i);
+        // Loop through incoming and leaving arcs
+        for (int j = 0; j < vertex->SOMGetIncomingArcs()->getSize() + vertex->SOMGetLeavingArcs()->getSize(); j++) {
+            CArc* arc = j >= vertex->SOMGetIncomingArcs()->getSize() ?
+                    vertex->SOMGetLeavingArcs()->get(j - vertex->SOMGetIncomingArcs()->getSize()) :
+                    vertex->SOMGetIncomingArcs()->get(j);
+            int arcOrigin = this->GRAGetArcOrigin(arc)->SOMGetId();
+            int arcDestination = arc->ARCGetDestination();
+            int flow = 0;
+            printf("%s", strMultiCat(5, "\nFlow amount for the arc ", itoa(arcOrigin), " -> ", itoa(arcDestination), ": "));
+            scanf("%d", &flow);
+            if (flow > 0 || flow > arc->ARCGetMaximumFlow()) {
+                arc->ARCSetTemporaryFlow(flow);
+            } else {
+                throw CGraphException(GRAPH_EXCEPTION_WRONG_ARC_ATTRIBUTES, strMultiCat(4,
+                    "Wrong flow, the flow must be strictly positive and less than the arc maximum supported flow which is ",
+                    itoa(arc->ARCGetMaximumFlow()), " ! (entered ", itoa(flow), ")"));
+            }
+        }
+    }
+}
+
+/**
+ * Check the incoming and leaving arcs of each vertices for the conversation law
+ *
+ * @return True if the conservation law is respected, false if it isn't
+ */
+bool CGraph::checkConservationLaw() {
+    for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
+        if (!this->GRAGetVertices()->get(i)->checkConservationLaw()) return false;
+    }
+    return true;
+}
+
+/**
+ * Retrieves the amount of the total cost for the actual flow
+ *
+ * @return the amount of the total cost for the actual flow
+ */
+int CGraph::getTotalCost() {
+    int totalCost = 0;
+    for (int i = 0; i < this->GRAGetVertices()->getSize(); i++) {
+        CSommet* vertex = this->GRAGetVertices()->get(i);
+        for (int j = 0; j < vertex->SOMGetIncomingArcs()->getSize(); j++) {
+            CArc* arc = vertex->SOMGetIncomingArcs()->get(j);
+            totalCost+= arc->ARCGetTemporaryFlow() * arc->ARCGetCost();
+        }
+        for (int j = 0; j < vertex->SOMGetLeavingArcs()->getSize(); j++) {
+            CArc* arc = vertex->SOMGetLeavingArcs()->get(j);
+            totalCost+= arc->ARCGetTemporaryFlow() * arc->ARCGetCost();
+        }
+    }
+    return totalCost;
+}
+
+
+
+
+

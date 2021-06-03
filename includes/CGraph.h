@@ -7,6 +7,9 @@
 
 #include "CSommet.h"
 #include <malloc.h>
+#include "string_utils.h"
+#include "defines.h"
+#include "CGraphException.h"
 
 /**
  * CGraph constructor
@@ -84,6 +87,22 @@ public:
      * @return A new graph which is a copy of the current graph except that every arcs have been inverted
      */
     CGraph* GRAInvert();
+    /**
+     * Ask the user for the flow amount of every arc in the graph
+     */
+    void askFlowAmounts();
+    /**
+     * Check the incoming and leaving arcs of each vertices for the conversation law
+     *
+     * @return True if the conservation law is respected, false if it isn't
+     */
+    bool checkConservationLaw();
+    /**
+     * Retrieves the amount of the total cost for the actual flow
+     *
+     * @return the amount of the total cost for the actual flow
+     */
+    int getTotalCost();
 
 };
 #endif //MATRIXEDCPP_CGRAPHE_H

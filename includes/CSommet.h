@@ -88,6 +88,12 @@ public:
      * @return The vertex identifier
      */
     int SOMGetId() const;
+    /**
+     * Check the incoming and leaving arcs for the conversation law
+     *
+     * @return True if the conservation law is respected, false if it isn't
+     */
+    bool checkConservationLaw();
 
 };
 
